@@ -1,11 +1,4 @@
-SELECT band_name,
-       IF(splits = 0, 2022 - formed_year, 2022 - formed_year) AS lifespan
-FROM (
-    SELECT band_name,
-           YEAR(MAX(CASE WHEN attribute = 'formed' THEN CAST(value AS UNSIGNED) END)) AS formed_year,
-           SUM(CASE WHEN attribute = 'split' THEN 1 ELSE 0 END) AS splits
-    FROM bands
-    WHERE style LIKE '%Glam rock%'
-    GROUP BY band_name
-) AS subquery
-ORDER BY lifespan DESC;
+SELECT band_name, (IFNULL(split, 2022) - formed) AS lifespan
+       FROM metal_bands
+       WHERE FIND_IN_SET('Glam rock', IFNULL(style, "")) > 0
+       ORDER BY lifespan DESC;
